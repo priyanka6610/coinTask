@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <script>
+       players = {
+            computer: 0,
+            humanplayer: 0
+        }
+        coinToss = ["heads", "tails"]
+        gameScore = []
+        gameScore = {
+            computer: 0,
+            humanplayer: 0
+        }
+        finalTable = []
+        winnerLists=[]
+        //========================================
+        function coinTossandCount() {
+            match = 1
+            x = setInterval(() => {
+                if (match == 11) {
+                    clearInterval(x)
+                    if (gameScore.computer > gameScore.humanplayer) {
+                        console.log('Computer score:-', gameScore.computer, "  ", "humanPlayer Score:-", gameScore.humanplayer)
+                        console.log("_____________  Computer win The Match  _______________")
+                    } else if (gameScore.computer < gameScore.humanplayer) {
+                        console.log('Computer score:-', gameScore.computer, "  ", "humanPlayer Score:-", gameScore.humanplayer)
+                        console.log("+++++++++++++ Player win The Match  ++++++++++++")
+                    } else {
+                        console.log('Computer score:-', gameScore.computer, "  ", "humanPlayer Score:-", gameScore.humanplayer)
+                        console.log(">>>>>>>>>>  Draw Match   >>>>>>>>>>")
+                    }
+                    console.table([gameScore])
+                    gameScore.computer=0
+                    gameScore.humanplayer=0
+                    winnerCalculation(players.humanplayer,players.computer)
+                }
+                else {
+                    k1 = coinToss[Math.floor(Math.random() * 2)]
+                    k2 = coinToss[Math.floor(Math.random() * 2)]
+                    if (k1 == "heads") {
+                        players.computer += 1
+                        gameScore.computer += 1
+                    }
+                    if (k2 == "heads") {
+                        players.humanplayer += 1
+                        gameScore.humanplayer += 1
+                    }
+                    console.log("Toss No:", match)
+                    console.log("          computer:-" + k1)
+                    console.log("          humanplayer:-" + k2)
+                    console.log(".......................................")
+                    match++
+                    finalTable.push({ Round: round, computer: k1, humanplayer: k2 })
+                }
+            }, 1000)
+        }
+        function Break() {
+            round = 0
+            y = setInterval(function coinTossGame() {
+                if (round == 4) {
+                    clearInterval(y)
+                    console.log("---------------- FINAL SCORE ---------------")
+                    if (players.computer > players.humanplayer) {
+                        console.log("____________ Computer win The Hole  Match  ___________")
+                    } else if (players.computer < players.humanplayer) {
+                        console.log("++++++++++  humanPlayer win The Hole Match  ++++++++++++")
+                    } else {
+                        console.log(">>>>>>>>>>  Draw Match   >>>>>>>>>>>")
+                    }
+                    console.table([players])
+                    console.table(finalTable)
+                    csvDataFile()
+                } else {
+                    round++
+                    console.log(`Match>>>>>>>>>>>>:-${round}`)
+                    coinTossandCount()
+                    
+                    return coinTossGame
+                }
+
+            }(), 15000)
+        }
+        function csvDataFile() {
+            cs = ""
+            cs += "Round,Computer,humanPlayer"
+            cs += "\r\n"
+            resultNo = 0
+            roundInterval = 10 - 1
+            for (i of finalTable) {
+                cs += i.Round + "," + i.computer + "," + i.humanplayer + ","
+                cs += "\r\n"
+                if (finalTable.indexOf(i) == roundInterval) {
+                    cs +=" ===> " + winnerLists[resultNo]
+                    cs += "\r\n"
+                    resultNo++
+                    roundInterval = roundInterval + 10
+                    if (resultNo == 4) {
+                        cs += "FINAL"
+                        cs += "\r\n"
+                        cs += winnerLists[resultNo - 1]
+                        cs += "\r\n"
+                    }
+                }
+            }
+            let tempBlob = new Blob([cs], { type: "text\csv" })
+
+            //download url which is temporary
+            let tempURL = window.URL.createObjectURL(tempBlob)
+            let activation = document.createElement("a")
+            activation.href = tempURL
+            //forcing this activation or forcefully downloading
+            activation.download = "coinTossGame.csv"
+            //forceful click
+            activation.click()
+            window.URL.revokeObjectURL(tempURL)
+
+            activation.remove()
+        }
+
+        function winnerCalculation(humanplayer,computer){
+            diff=humanplayer-computer
+            if(diff>0){
+                console.log(`Player leads computer by ${Math.abs(diff)} heads`)
+                winnerLists.push(`Player leads computer by ${Math.abs(diff)} heads`)
+            }
+            else if(diff==0){
+                console.log("Match draw")
+                winnerLists.push("Match Draw")
+            }
+            else{
+                console.log(`Computer leads player by ${Math.abs(diff)} heads`)
+                winnerLists.push(`Computer leads player by ${Math.abs(diff)} heads`)
+            }
+        }
+        Break()
+    </script>
+
+<body>
+    
+</body>
+</html>
